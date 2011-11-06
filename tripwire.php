@@ -20,7 +20,7 @@
 
 $config = array(
 
-  'md5file' => 'filelist.md5' , // File Containing the MD5 Keys
+  'md5file' => 'tripwire_filelist.md5' , // File Containing the MD5 Keys
   'delim' => '&&&' ,            // Delimited for Filelist
 
   'exclude' => array(
@@ -33,19 +33,22 @@ $config = array(
       '.bash_history'
     ) ,
     'extns' => array(         // Extensions to Exclude from Scanning
-      'flv' ,
+      'flv' , 'swf' ,
+
       'log' ,
       'txt' ,
-      'mp4' ,
-      'mov' ,
-      'psd' ,
-      'swf' ,
+      'mp4' , 'mov' , 'webm' , 'ogv' ,
+      'psd' , 'jpg' ,
+
+
+
+
       'mno' ,
-      'jpg' ,
+
       'aif' ,
       'doc' ,
-      'webm' ,
-      'ogv' ,
+
+
       'afm' ,
       'sitx'
     )
@@ -63,8 +66,11 @@ $config = array(
 
 
 
-function makeHash( $dir ){
+function makeHash( $dir=false ){
   global $config, $filelist;
+
+  if( !$dir )
+    $dir = $_SERVER['DOCUMENT_ROOT'];
 
   if( !is_dir( $dir ) )
     return false;
