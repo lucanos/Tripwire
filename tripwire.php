@@ -1,4 +1,4 @@
-<?php
+<pre><?php
 
 /*
  *  Tripwire
@@ -27,20 +27,25 @@ $config = array(
     'files' => array(         // Files to Exclude from Scanning
       '.' ,
       '..' ,
-      'filelist.md5' ,
+      'tripwire_filelist.md5' ,
       'error_log' ,
       'backup.zip' ,
       '.bash_history'
     ) ,
     'extns' => array(         // Extensions to Exclude from Scanning
-      'flv' , 'swf' ,
+      'flv' ,
       'log' ,
       'txt' ,
-      'mp4' , 'mov' , 'webm' , 'ogv' ,
-      'psd' , 'jpg' ,
+      'mp4' ,
+      'mov' ,
+      'psd' ,
+      'swf' ,
       'mno' ,
+      'jpg' ,
       'aif' ,
       'doc' ,
+      'webm' ,
+      'ogv' ,
       'afm' ,
       'sitx'
     )
@@ -60,34 +65,39 @@ $config = array(
 
 function makeHash( $dir=false ){
   global $config, $filelist;
-
-  if( !$dir )
+  
+  if( !$dir )  // Default to the Root of the Site the script is executed under
     $dir = $_SERVER['DOCUMENT_ROOT'];
 
-  if( !is_dir( $dir ) )
+  if( substr( $dir , -1 )=='/' )  // Strip slash from end of directory
+    $dir = substr( $dir , 0 , -1 );
+
+  if( !is_dir( $dir ) )  // If the supplied variable is not a Directory, terminate
     return false;
 
   $temp = array();
   $d = dir( $dir );
 
-  while( false!==( $entry = $d->read() ) ){
-    if( !is_readable( $entry ) ){
-      // File is Unreadable
-      continue;
+  while( false!==( $entry = $d->read() ) ){  // Loop through the files
+    if( is_link( $entry ) ){
+      continue;  // Symbolic Link - Excluded
     }
     if( in_array( $entry , $config['exclude']['files'] ) ){
-      // Excluded File/Folder
-      continue;
+      continue;  // Excluded File/Folder
     }
     if( in_array( pathinfo( $entry , PATHINFO_EXTENSION ) , $config['exclude']['extns'] ) ){
-      // Excluded File Extension
-      continue;
+      continue;  // Excluded File Extension
     }
     if( is_dir( $dir.'/'.$entry ) ){
       // Recurse
       $temp = array_merge( $temp , makeHash( $dir.'/'.$entry ) );
     }else{
-      $temp[$dir.'/'.$entry] = md5_file( $dir.'/'.$entry );
+      $md5 = @md5_file( $dir.'/'.$entry );
+      if( !$md5 ){
+        file_put_contents( 'tripwire_unreadable.txt' ,  "{$dir}/{$entry} - Unreadable\n" , FILE_APPEND );
+      }else{
+        $temp[$dir.'/'.$entry] = $md5;
+      }
     }
   }
 
@@ -148,17 +158,14 @@ $modified = array_diff_assoc( array_intersect_key( $last , $now ) , array_inters
 
 
 
-echo '$new<pre>';
+echo "\$new\n";
 var_dump( $new );
-echo '</pre>';
 
-echo '$deleted<pre>';
+echo "\$deleted\n";
 var_dump( $deleted );
-echo '</pre>';
 
-echo '$modified<pre>';
+echo "\$modified\n";
 var_dump( $modified );
-echo '</pre>';
 
 
 
@@ -194,11 +201,11 @@ if( count( $last ) // If there was a Filelist from the last run to compare again
     // Prepare the placeholder details
     $body_replacements = array(
       '[AN]' => count( $new ) ,
-      '[AF]' => ( count( $new ) ? implode( "\n" , array_keys( $new ) ) : 'No Files' ) ,
+      '[AF]' => ( count( $new ) ? implode( "\n" , $new ) : 'No Files' ) ,
       '[MN]' => count( $modified ) ,
       '[MF]' => ( count( $modified ) ? implode( "\n" , array_keys( $modified ) ) : 'No Files' ) ,
       '[DN]' => count( $deleted ) ,
-      '[DF]' => ( count( $deleted ) ? implode( "\n" , array_keys( $deleted ) ) : 'No Files' ) ,
+      '[DF]' => ( count( $deleted ) ? implode( "\n" , $deleted ) : 'No Files' ) ,
     );
     
     // Prepare the recipients
@@ -214,9 +221,9 @@ if( count( $last ) // If there was a Filelist from the last run to compare again
     
     // Send it
     if( mail( $to , $title , $body ) ){
-      echo '<pre>Email Sent Successfully</pre>';
+      echo "Email Sent Successfully\n";
     }else{
-      echo '<pre>Email Failed</pre>';
+      echo "Email Failed\n";
     }
   
   }
