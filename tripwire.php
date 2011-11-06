@@ -34,21 +34,13 @@ $config = array(
     ) ,
     'extns' => array(         // Extensions to Exclude from Scanning
       'flv' , 'swf' ,
-
       'log' ,
       'txt' ,
       'mp4' , 'mov' , 'webm' , 'ogv' ,
       'psd' , 'jpg' ,
-
-
-
-
       'mno' ,
-
       'aif' ,
       'doc' ,
-
-
       'afm' ,
       'sitx'
     )
@@ -79,6 +71,10 @@ function makeHash( $dir=false ){
   $d = dir( $dir );
 
   while( false!==( $entry = $d->read() ) ){
+    if( !is_readable( $entry ) ){
+      // File is Unreadable
+      continue;
+    }
     if( in_array( $entry , $config['exclude']['files'] ) ){
       // Excluded File/Folder
       continue;
