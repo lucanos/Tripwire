@@ -20,11 +20,14 @@
 
 $config = array(
 
-  'md5file' => 'tripwire_filelist.md5' , // File Containing the MD5 Keys
-  'delim' => '&&&' ,            // Delimited for Filelist
+  // File Containing the MD5 Keys
+  'md5file' => 'tripwire_filelist.md5' ,
+  // Delimited for Filelist
+  'delim' => '&&&' ,
 
   'exclude' => array(
-    'files' => array(         // Files to Exclude from Scanning
+    // Specific Files to Exclude from Scanning
+    'files' => array(
       '.' ,
       '..' ,
       'tripwire_filelist.md5' ,
@@ -32,23 +35,27 @@ $config = array(
       'backup.zip' ,
       '.bash_history'
     ) ,
-    'extns' => array(         // Extensions to Exclude from Scanning
-      'flv' ,
+    // Extensions to Exclude from Scanning
+    'extensions' => array(
+      'afm' ,
+      // Flash
+      'flv' , 'swf' ,
+      // Images
+      'bmp' , 'gif' , 'jpeg' , 'jpg' , 'png' , 'psd' ,
       'log' ,
       'txt' ,
-      'mp4' ,
-      'mov' ,
-      'psd' ,
-      'swf' ,
+      // Videos
+      'mp4' , 'mov' , 'ogv' , 'webm' ,
+      // Dreamweaver
       'mno' ,
-      'jpg' ,
-      'aif' ,
-      'doc' ,
-      'webm' ,
-      'ogv' ,
-      'afm' ,
-      'sitx'
-    )
+      // Audio
+      'aif' , 'mp3' ,
+      // Microsoft Word Files
+      'doc' , 'docx' , 'xls' , 'xlsx' ,
+      // Compressed Files
+      '7z' , 'rar' , 'sitx' , 'zip'
+    ) ,
+    'reg'
   ) ,
 
   'email' => array(
@@ -65,29 +72,36 @@ $config = array(
 
 function makeHash( $dir=false ){
   global $config, $filelist;
-  
-  if( !$dir )  // Default to the Root of the Site the script is executed under
+
+  // If no Directory Specified, Default to the Root of the Site the script is executed under
+  if( !$dir )
     $dir = $_SERVER['DOCUMENT_ROOT'];
 
-  if( substr( $dir , -1 )=='/' )  // Strip slash from end of directory
+  // If last character is a slash, strip it off the end
+  if( substr( $dir , -1 )=='/' )
     $dir = substr( $dir , 0 , -1 );
 
-  if( !is_dir( $dir ) )  // If the supplied variable is not a Directory, terminate
+  // If the supplied variable is not a Directory, terminate
+  if( !is_dir( $dir ) )
     return false;
 
   $temp = array();
   $d = dir( $dir );
 
-  while( false!==( $entry = $d->read() ) ){  // Loop through the files
-    if( is_link( $entry ) ){
-      continue;  // Symbolic Link - Excluded
-    }
-    if( in_array( $entry , $config['exclude']['files'] ) ){
-      continue;  // Excluded File/Folder
-    }
-    if( in_array( pathinfo( $entry , PATHINFO_EXTENSION ) , $config['exclude']['extns'] ) ){
-      continue;  // Excluded File Extension
-    }
+  // Loop through the files
+  while( false!==( $entry = $d->read() ) ){
+    // Symbolic Link - Excluded
+    if( is_link( $entry ) )
+      continue;
+
+    // Excluded File/Folder
+    if( in_array( $entry , $config['exclude']['files'] ) )
+      continue;
+
+    // Excluded File Extension
+    if( in_array( pathinfo( $entry , PATHINFO_EXTENSION ) , $config['exclude']['extensions'] ) )
+      continue;
+
     if( is_dir( $dir.'/'.$entry ) ){
       // Recurse
       $temp = array_merge( $temp , makeHash( $dir.'/'.$entry ) );
@@ -173,7 +187,7 @@ if( !count( $last ) // If there was no file list
     || ( count( $new ) || count( $deleted ) || count( $modified ) ) ){ // Or a change was detected
 
   # Update the file list
-  
+
   // Init an Array for Lines
   $log = array();
 
@@ -191,13 +205,14 @@ if( !count( $last ) // If there was no file list
 
 if( count( $last ) // If there was a Filelist from the last run to compare against
     && ( count( $new ) || count( $deleted ) || count( $modified ) ) ){ // And changes occurred
-  
+
   # Changes Detected
-  
-  if( count( $config['email']['to'] ) ){ // If there are email addresses to notify
-  
+
+  // If there are email addresses to notify
+  if( count( $config['email']['to'] ) ){
+
     # Compile the Email
-    
+
     // Prepare the placeholder details
     $body_replacements = array(
       '[AN]' => count( $new ) ,
@@ -207,7 +222,7 @@ if( count( $last ) // If there was a Filelist from the last run to compare again
       '[DN]' => count( $deleted ) ,
       '[DF]' => ( count( $deleted ) ? implode( "\n" , $deleted ) : 'No Files' ) ,
     );
-    
+
     // Prepare the recipients
     $to = implode( ', ' , $config['email']['to'] );
     // Prepare the Subject Line
@@ -218,14 +233,14 @@ if( count( $last ) // If there was a Filelist from the last run to compare again
               $body_replacements ,
               $config['email']['body']
             );
-    
+
     // Send it
     if( mail( $to , $title , $body ) ){
       echo "Email Sent Successfully\n";
     }else{
       echo "Email Failed\n";
     }
-  
+
   }
 
 }else{
