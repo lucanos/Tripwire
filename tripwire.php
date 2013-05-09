@@ -70,7 +70,7 @@ $config = array(
 
 
 
-function makeHash( $dir=false ){
+function run_tripwire( $dir=false ){
   global $config, $filelist;
 
   // If no Directory Specified, Default to the Root of the Site the script is executed under
@@ -104,7 +104,7 @@ function makeHash( $dir=false ){
 
     if( is_dir( $dir.'/'.$entry ) ){
       // Recurse
-      $temp = array_merge( $temp , makeHash( $dir.'/'.$entry ) );
+      $temp = array_merge( $temp , run_tripwire( $dir.'/'.$entry ) );
     }else{
       $md5 = @md5_file( $dir.'/'.$entry );
       if( !$md5 ){
@@ -155,7 +155,7 @@ if( file_exists( $config['md5file'] ) ){
 
 
 // Init the This Check List
-$now = makeHash( '.' );
+$now = run_tripwire( '.' );
 
 
 
@@ -202,9 +202,9 @@ if( !count( $last ) // If there was no file list
 
 
 
-
-if( count( $last ) // If there was a Filelist from the last run to compare against
-    && ( count( $new ) || count( $deleted ) || count( $modified ) ) ){ // And changes occurred
+// If there was a Filelist from the last run to compare against, and changes have occurred
+if( count( $last )
+    && ( count( $new ) || count( $deleted ) || count( $modified ) ) ){
 
   # Changes Detected
 
