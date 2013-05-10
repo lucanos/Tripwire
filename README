@@ -1,1 +1,1 @@
-README
+A PHP script, designed to be run by a cron job, which detects files which have been added, deleted or modified since the previous execution of the script. Sends emails with a summary of changes. Great for detecting malicious activity (hacking, unauthorised access other hacker actions)
