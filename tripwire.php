@@ -47,27 +47,53 @@ if( file_exists( 'tripwire_config.php' ) ){
         'tripwire_config.php' ,
         'error_log' ,
         'backup.zip' ,
-        '.bash_history'
+        '.bash_history' ,
+        // Apple
+        '.DS_Store' ,
+        // Version control
+        '.git'
       ) ,
       // Extensions to Exclude from Scanning
       'extensions' => array(
+        // Adobe
         'afm' ,
-        // Flash
-        'flv' , 'swf' ,
-        // Images
-        'bmp' , 'gif' , 'jpeg' , 'jpg' , 'png' , 'psd' ,
-        'log' ,
-        'txt' ,
-        // Videos
-        'mp4' , 'mov' , 'ogv' , 'webm' ,
-        // Dreamweaver
+        'flv' ,
         'mno' ,
+        'pdf' ,
+        'psd' ,
+        'swf' ,
+        // Images
+        'bmp' ,
+        'gif' ,
+        'jpeg' ,
+        'jpg' ,
+        'png' ,
+        // Text
+        'log' ,
+        'rdf' ,
+        'txt' ,
+        // Video
+        'mp4' ,
+        'mov' ,
+        'ogv' ,
+        'webm' ,
         // Audio
-        'aif' , 'mp3' ,
-        // Microsoft Word Files
-        'doc' , 'docx' , 'xls' , 'xlsx' ,
+        'aif' ,
+        'mp3' ,
+        // Microsoft Files
+        'doc' ,
+        'docx' ,
+        'ppt' ,
+        'pptx' ,
+        'xls' ,
+        'xlsx' ,
         // Compressed Files
-        '7z' , 'rar' , 'sitx' , 'zip'
+        '7z' ,
+        'gz' ,
+        'rar' ,
+        'sitx' ,
+        'tar' ,
+        'zip'
       )
     ) ,
 
