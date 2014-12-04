@@ -114,9 +114,11 @@ function run_tripwire( $dir=false ){
 
   $temp = array();
   $d = dir( $dir );
+  
+  if($d)
 
   // Loop through the files
-  while( false!==( $entry = $d->read() ) ){
+  while( false!==( $entry = $d->read() )  ){
   
     // Full Entry (including Directory)
     $entry_full = $dir.'/'.$entry;
@@ -125,7 +127,7 @@ function run_tripwire( $dir=false ){
     debugMsg( "<tr><th align='left'>$entry_full</th>" );
       
     // Symbolic Link - Excluded
-    if( is_link( $entry ) ){
+    if( @is_link( $entry ) ){
       debugMsg( "<td><em>Symbolic Link</em></td></tr>\n" );
       continue;
     }
@@ -159,7 +161,7 @@ function run_tripwire( $dir=false ){
     }
   }
 
-  $d->close();
+  if($d) $d->close();
 
   return $temp;
 
