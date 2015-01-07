@@ -18,6 +18,11 @@
  *
  */
 
+// Check PHP Version and Die to Error if obsolete
+if( !function_exists( 'version_compare' ) || version_compare( PHP_VERSION , '5.1.0' , '<' ) ){
+  die( 'This script requires at least PHP v5.1.0. You are running v'.PHP_VERSION );
+}
+
 set_time_limit( 0 );
 
 if( file_exists( 'tripwire_config.php' ) ){
