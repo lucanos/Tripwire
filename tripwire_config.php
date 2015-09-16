@@ -53,7 +53,9 @@
         // 'user@server.com'
       ) ,
       'title' => '[Tripwire] Change Detected - [X] Files' , // The Email Title
-      'body' => "Tripwire (https://github.com/lucanos/Tripwire) has detected a number of changes:\n\n[AN] Files Added:\n[AF]\n\n[MN] Files Modified:\n[MF]\n\n[DN] Files Deleted:\n[DF]\n\n"   // The Email Template
+      'body' => "Tripwire (https://github.com/lucanos/Tripwire) has detected a number of changes:\n\n[AN] Files Added:\n[AF]\n\n[MN] Files Modified:\n[MF]\n\n[DN] Files Deleted:\n[DF]\n\n" , // The Email Template
+      'headers' => 'From: <user@server.com>' . "\r\n"
+
     )
 
   );
