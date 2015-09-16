@@ -383,8 +383,10 @@ if( count( $config['email']['to'] ) ){
 
     // Prepare the recipients
     $to = implode( ', ' , $config['email']['to'] );
+    $headers = $config['email']['headers'];
+
     // Send it
-    if( mail( $to , $title , $body ) ){
+    if( mail( $to , $title , $body, $headers ) ){
       echo "Email Sent Successfully\n";
     }else{
       echo "Email Failed\n";
